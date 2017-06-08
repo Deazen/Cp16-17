@@ -753,7 +753,31 @@ instance Functor B_tree
 inordB_tree = cataB_tree inordAux
 
 inordAux = either nil join
-       where join (x,((a,b):xs)) = x ++ ((:) a b)
+       where join (x,xs) = x ++ aux5 xs
+
+aux5 xs = aux51(unzip xs)
+
+aux51 ([],[]) = []
+aux51 ((a:as,(b:bs))) = (cons(a,b) ++ aux51(as,bs))
+
+
+t2 = Block {
+      leftmost = Block {
+                 leftmost = Nil,
+                 block = [ (1,Nil),(2,Nil),(5,Nil),(6,Nil)]},
+      block = [
+               (7,Block {
+                          leftmost = Nil,
+                          block = [(9,Nil),(12,Nil)]}),
+               (16,Block {
+                          leftmost = Nil,
+                          block = [(18,Nil),(21,Nil)]}),
+               (22,Block{
+                          leftmost =Nil,
+                          block = [(23,Nil),(24,Nil)]})
+              ]}
+
+
 
 largestBlock = undefined
 
