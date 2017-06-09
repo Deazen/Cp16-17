@@ -750,16 +750,25 @@ hyloB_tree f g = cataB_tree f . anaB_tree g
 instance Functor B_tree
          where fmap f = cataB_tree ( inB_tree . baseB_tree f id)
 
+-- Inord
 inordB_tree = cataB_tree inordAux
 
 inordAux = either nil join
        where join (x,xs) = x ++ auxInord(unzip xs)
 
 auxInord ([],[]) = []
-auxInord ((a:as,(b:bs))) = (cons(a,b) ++ aux51(as,bs))
+auxInord ((a:as,(b:bs))) = (cons(a,b) ++ auxInord(as,bs))
 
-largestBlock = undefined
+-- LargestBlock
+largestBlock = cataB_tree largestAux
 
+largestAux = either (const 0) bigest
+        where bigest (x,xs) = max x (max (length xs) (auxLarger(p2(unzip xs))))
+
+auxLarger [] = 0
+auxLarger b = maximum b
+
+-- MirrorB_tree
 mirrorB_tree = undefined
 
 lsplitB_tree = undefined
