@@ -733,8 +733,8 @@ worker = undefined
 --data B_tree a = Nil | Block  { leftmost :: B_tree a, block :: [(a, B_tree a)] } deriving (Show,Eq)
 inB_tree = either (const Nil) (uncurry Block)
 
-outB_tree Nil = Left ()
-outB_tree Block{leftmost = a, block = b} = Right (a,b)
+outB_tree Nil = i1 ()
+outB_tree Block{leftmost = a, block = b} = i2 (a,b)
 
 recB_tree f = id -|- (f >< (map (id >< f)))
 -- recB_tree f = baseB_tree id f
@@ -769,7 +769,15 @@ auxLarger [] = 0
 auxLarger b = maximum b
 
 -- MirrorB_tree
-mirrorB_tree = undefined
+c = ((),[(1,()),(2,()),(5,()),(6,())])
+cs = [(7,((),[(9,()),(12,())])),(16,((),[(18,()),(21,())]))]
+
+t2 = (c,cs)
+mirrorB_tree = anaB_tree ((id -|- mirrorAux) . outB_tree)
+
+mirrorAux  (x,xs) = (p2(last xs), reverse(auxMirror(x,reverse(uncurry zip((reverse><id)(unzip xs))))))
+
+auxMirror (x,(a,b):xs) = (a,x):xs
 
 lsplitB_tree = undefined
 
