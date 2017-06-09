@@ -769,16 +769,13 @@ auxLarger [] = 0
 auxLarger b = maximum b
 
 -- MirrorB_tree
-c = ((),[(1,()),(2,()),(5,()),(6,())])
-cs = [(7,((),[(9,()),(12,())])),(16,((),[(18,()),(21,())]))]
-
-t2 = (c,cs)
 mirrorB_tree = anaB_tree ((id -|- mirrorAux) . outB_tree)
 
 mirrorAux  (x,xs) = (p2(last xs), reverse(auxMirror(x,reverse(uncurry zip((reverse><id)(unzip xs))))))
 
 auxMirror (x,(a,b):xs) = (a,x):xs
 
+--lsplitB_tree
 lsplitB_tree = undefined
 
 qSortB_tree = undefined
