@@ -751,7 +751,7 @@ instance Functor B_tree
          where fmap f = cataB_tree ( inB_tree . baseB_tree f id)
 
 -- Inord
-inordB_tree = cataB_tree inordAux
+inordB_tree = inordAux
 
 inordAux = either nil join
        where join (x,xs) = x ++ auxInord(unzip xs)
@@ -776,13 +776,16 @@ mirrorAux  (x,xs) = (p2(last xs), reverse(auxMirror(x,reverse(uncurry zip((rever
 auxMirror (x,(a,b):xs) = (a,x):xs
 
 --lsplitB_tree
-lsplitB_tree = undefined
+lsplitB_tree [] = i1 ()
+lsplitB_tree (a:as) = i2 (p1(part (<a) as),[(a,p2(part (<a) as))])
 
-qSortB_tree = undefined
+qSortB_tree :: Ord a => [a] -> [a]
+qSortB_tree = hyloB_tree inordB_tree lsplitB_tree
 
 dotB_tree = undefined
 
 cB_tree2Exp = undefined
+
 \end{code}
 
 \subsection*{Problema 4}
