@@ -730,7 +730,6 @@ worker = undefined
 \subsection*{Problema 3}
 
 \begin{code}
---data B_tree a = Nil | Block  { leftmost :: B_tree a, block :: [(a, B_tree a)] } deriving (Show,Eq)
 inB_tree = either (const Nil) (uncurry Block)
 
 outB_tree Nil = i1 ()
@@ -805,26 +804,6 @@ cB_tree2Exp = undefined
 \subsection*{Problema 4}
 
 \begin{code}
---type Algae = A
---data A = NA | A A B deriving Show
---data B = NB | B A deriving Show
-
---cataA ga gb = ga . (id -|- cataA ga gb >< cataB ga gb) . outA
---cataB ga gb = gb . (id -|- cataA ga gb) . outB
-
---inA :: Either Null (Prod A B) -> A
---inA = either (const NA)(uncurry A)
-
---outA :: A -> Either Null (Prod A B)
---outA NA = Left ()
---outA (A a b) = Right (a,b)
-
---inB :: Either Null A -> B
---inB = either (const NB) B
-
---outB :: B -> Either Null 13A
---outB NB = Left ()
---outB (B a) = Right a
 
 anaA ga gb = inA . (id -|- anaA ga gb >< anaB ga gb) . ga
 
@@ -833,23 +812,29 @@ anaB ga gb = inB . (id -|- anaA ga gb) . gb
 \end{code}
 
 \begin{code}
-generateAlgae n = genA (n+1)
-genA 0 = NA
-genA n = A (genA (n-1)) (genB(n-1))
-genB 0 = NB
-genB n = B (genA(n-1))
+generateAlgae n = anaA genA genB (n+1)
 
-showAlgae a = showA a
+genA 0 = i1 ()
+genA n = i2 (n-1,n-1)
+genB 0 = i1 ()
+genB n = i2 (n-1)
 
-showA (A NA NB) = "A"
-showA (A a b) = (showA a) ++ (showB b)
-showB (B NA) = "B"
-showB (B a) = (showA a)
+showAlgae = cataA auxAlgaeA auxAlgaeB
+
+auxAlgaeA = either (const "") showA
+showA ("","") = "A"
+showA (a,b) = a ++ b
+
+auxAlgaeB = either (const "") showB
+showB ("") = "B"
+showB (a) = a
+
+testeAlgae n = showAlgae(generateAlgae n)
 
 genArgs :: Gen (Int)
 genArgs = choose (0,20)
 
-prop_example n = (toInteger(length(showAlgae(generateAlgae n))) == fib(toInteger(succ n)))
+prop_example n = (toInteger(length(testeAlgae n)) == fib(toInteger(succ n)))
 
 test = quickCheck $ forAll genArgs prop_example
 \end{code}
@@ -857,8 +842,11 @@ test = quickCheck $ forAll genArgs prop_example
 \subsection*{Problema 5}
 
 \begin{code}
+
 permuta = undefined
+
 eliminatoria = undefined
+
 \end{code}
 
 %----------------- Fim do anexo cpm soluções propostas ------------------------%
