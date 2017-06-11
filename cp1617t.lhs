@@ -777,7 +777,21 @@ auxMirror (x,(a,b):xs) = (a,x):xs
 
 --lsplitB_tree
 lsplitB_tree [] = i1 ()
-lsplitB_tree (a:as) = i2 (p1(part (<a) as),[(a,p2(part (<a) as))])
+lsplitB_tree (a1:a2:as) | a1 < a2 = i2 (auxS1 a1 as,[(a1,auxS2 a1 a2 as),(a2,auxS3 a2 as)])
+                        | otherwise = i2 (auxS1 a2 as,[(a2,auxS2 a2 a1 as),(a1,auxS3 a1 as)])
+lsplitB_tree (a:as) = i2 (auxS1 a as,[(a,auxS3 a as)])
+
+auxS1 a [] = []
+auxS1 a (x:xs) | x<a = x:auxS1 a xs
+                   | otherwise = auxS1 a xs
+
+auxS2 a b [] = []
+auxS2 a b (x:xs) | x>a && x<b = x:auxS2 a b xs
+                     | otherwise = auxS2 a b xs
+
+auxS3 a [] = []
+auxS3 a (x:xs) | x>a = x:auxS3 a xs
+                   | otherwise = auxS3 a xs
 
 qSortB_tree :: Ord a => [a] -> [a]
 qSortB_tree = hyloB_tree inordB_tree lsplitB_tree
@@ -791,15 +805,53 @@ cB_tree2Exp = undefined
 \subsection*{Problema 4}
 
 \begin{code}
-anaA = undefined
+--type Algae = A
+--data A = NA | A A B deriving Show
+--data B = NB | B A deriving Show
 
-anaB = undefined
+--cataA ga gb = ga . (id -|- cataA ga gb >< cataB ga gb) . outA
+--cataB ga gb = gb . (id -|- cataA ga gb) . outB
+
+--inA :: Either Null (Prod A B) -> A
+--inA = either (const NA)(uncurry A)
+
+--outA :: A -> Either Null (Prod A B)
+--outA NA = Left ()
+--outA (A a b) = Right (a,b)
+
+--inB :: Either Null A -> B
+--inB = either (const NB) B
+
+--outB :: B -> Either Null 13A
+--outB NB = Left ()
+--outB (B a) = Right a
+
+anaA ga gb = inA . (id -|- anaA ga gb >< anaB ga gb) . ga
+
+anaB ga gb = inB . (id -|- anaA ga gb) . gb
+
 \end{code}
 
 \begin{code}
-generateAlgae = undefined 
+generateAlgae n = genA (n+1)
+genA 0 = NA
+genA n = A (genA (n-1)) (genB(n-1))
+genB 0 = NB
+genB n = B (genA(n-1))
 
-showAlgae = undefined
+showAlgae a = showA a
+
+showA (A NA NB) = "A"
+showA (A a b) = (showA a) ++ (showB b)
+showB (B NA) = "B"
+showB (B a) = (showA a)
+
+genArgs :: Gen (Int)
+genArgs = choose (0,20)
+
+prop_example n = (toInteger(length(showAlgae(generateAlgae n))) == fib(toInteger(succ n)))
+
+test = quickCheck $ forAll genArgs prop_example
 \end{code}
 
 \subsection*{Problema 5}
